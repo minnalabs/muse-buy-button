@@ -1,20 +1,14 @@
-import { Spinning, Floating, StandardEnvironment } from "spacesvr";
+import { StandardEnvironment } from "spacesvr";
 import TransparentFloor from "../ideas/TransparentFloor";
 import CloudySky from "../ideas/CloudySky";
+import EthTransactButton from "../ideas/EthTransactButton";
 
 export default function Starter() {
   return (
     <StandardEnvironment>
       <ambientLight />
-      <group position={[0, 0, -4]}>
-        <Floating>
-          <Spinning xSpeed={0.2} ySpeed={0.4} zSpeed={0.3}>
-            <mesh>
-              <torusKnotBufferGeometry args={[1, 0.2]} />
-              <meshStandardMaterial color="blue" />
-            </mesh>
-          </Spinning>
-        </Floating>
+      <group position={[0, 1, -4]}>
+        <EthTransactButton text="hello" amount={0.01} receiveAddress="0x3a15EBbF9ae932F667076e7B2cfAb8998Aa02753" />
       </group>
       <CloudySky color="white" />
       <TransparentFloor opacity={0.7} />
