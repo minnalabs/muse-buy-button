@@ -30,9 +30,9 @@ type EthWalletSelectorProps = {
 };
 
 export default function EthWalletSelector(props: EthWalletSelectorProps) {
-  const { trigger, amount, address, setError, setTx } = props;
+  const {trigger, amount, address, setError, setTx} = props;
 
-  const { device } = useEnvironment();
+  const {device} = useEnvironment();
 
   const payWithWallet = async (walletType: WalletType) => {
     try {
@@ -47,7 +47,7 @@ export default function EthWalletSelector(props: EthWalletSelectorProps) {
         throw Error("wallet not found");
       }
       const tx = await sendPayment(amount, address, provider);
-      analytics.capture("idea-eth_transact_button-send", { ...tx });
+      analytics.capture("idea-eth_transact_button-send", {...tx});
       setTx(tx);
     } catch (e) {
       console.error(e);
@@ -88,9 +88,10 @@ export default function EthWalletSelector(props: EthWalletSelectorProps) {
           position-x={(i + 0.5 - wallets.length / 2) * 0.3}
         >
           <Interactable onClick={() => wallet.onClick(amount, address)}>
-            <Image src={wallet.image} size={0.175} />
+            <Image src={wallet.image} size={0.175}/>
           </Interactable>
         </group>
       ))}
     </group>
   );
+}
