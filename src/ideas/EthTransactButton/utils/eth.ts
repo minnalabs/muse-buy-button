@@ -1,6 +1,5 @@
-import { ethers } from "ethers";
-import { WalletConnectSDK } from "../utils/walletconnect";
-import { TransactionResponse, Web3Provider } from "@ethersproject/providers";
+import Web3 from "web3";
+import { WalletConnectSDK } from "./walletconnect";
 
 declare global {
   interface Window {
@@ -9,31 +8,17 @@ declare global {
   }
 }
 
-export const getMetamaskProvider = async () => {
+export const getMetamaskProvider = async (): Promise<Web3> => {
   if (!window.ethereum) throw new Error("No ethereum provider found");
   await window.ethereum.send("eth_requestAccounts");
-  return new ethers.providers.Web3Provider(window.ethereum);
+  return new Web3(window.ethereum);
 };
 
-export const getWalletConnectProvider = async () => {
+export const getWalletConnectProvider = async (): Promise<Web3> => {
   await WalletConnectSDK.connect();
   const walletConnectProvider = new WalletConnectSDK.getWeb3Provider({
-    infuraId: "27e484dcd9e3efcfd25a83a78777cdf1", // Required
+    infuraId: "40fe055d5aa24c7e950dcdd67c2835c1",
   });
   await walletConnectProvider.enable();
-  return new ethers.providers.Web3Provider(walletConnectProvider);
-};
-
-export const sendPayment = async (
-  amount: number,
-  address: string,
-  provider: Web3Provider
-): Promise<TransactionResponse> => {
-  const signer = provider.getSigner();
-  const value = ethers.utils.parseEther(amount.toString());
-  return await signer.sendTransaction({
-    value,
-    to: address,
-    gasLimit: 21000,
-  });
+  return new Web3(walletConnectProvider);
 };

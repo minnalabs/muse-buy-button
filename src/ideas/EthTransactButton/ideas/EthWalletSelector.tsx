@@ -1,12 +1,11 @@
 import {
   getMetamaskProvider,
   getWalletConnectProvider,
-  sendPayment,
 } from "../utils/eth";
 import { Interactable, Image, useEnvironment } from "spacesvr";
-import { ethers } from "ethers";
 import { useEffect } from "react";
-import { analytics } from "../utils/analytics";
+import Web3 from "web3";
+import {TransactionReceipt} from "web3-core";
 
 const METAMASK_IMG =
   "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/800px-MetaMask_Fox.svg.png";
@@ -18,42 +17,37 @@ type WalletType = "metamask" | "walletconnect";
 type Wallet = {
   name: string;
   image: string;
-  onClick: (amount: number, address: string) => any;
+  onClick: () => any;
 };
 
 type EthWalletSelectorProps = {
   trigger: boolean;
-  amount: number;
-  address: string;
+  onConnect: (web3: Web3) => Promise<TransactionReceipt>
   setError: (e: string) => void;
-  setTx: (tx: ethers.Transaction) => void;
+  setTx: (tx: TransactionReceipt) => void;
 };
 
 export default function EthWalletSelector(props: EthWalletSelectorProps) {
-  const {trigger, amount, address, setError, setTx} = props;
+  const {trigger, onConnect, setError, setTx} = props;
 
   const {device} = useEnvironment();
 
-  const payWithWallet = async (walletType: WalletType) => {
+  const mintWithWallet = async (walletType: WalletType) => {
     try {
-      let provider;
+      let web3;
       if (walletType === "metamask") {
-        provider = await getMetamaskProvider();
+        web3 = await getMetamaskProvider();
       }
       if (walletType === "walletconnect") {
-        provider = await getWalletConnectProvider();
+        web3 = await getWalletConnectProvider();
       }
-      if (!provider) {
+      if (!web3) {
         throw Error("wallet not found");
       }
-      const tx = await sendPayment(amount, address, provider);
-      analytics.capture("idea-eth_transact_button-send", {...tx});
+      const tx = await onConnect(web3);
       setTx(tx);
     } catch (e) {
       console.error(e);
-      analytics.capture("idea-eth_transact_button-error", {
-        message: e.message || "unknown error",
-      });
       setError(e.message || "unknown error");
     }
   };
@@ -63,21 +57,21 @@ export default function EthWalletSelector(props: EthWalletSelectorProps) {
     {
       name: "walletconnect",
       image: WALLETCONNECT_IMAGE,
-      onClick: () => payWithWallet("walletconnect"),
+      onClick: () => mintWithWallet("walletconnect"),
     },
   ];
   if (!device.mobile) {
     wallets.unshift({
       name: "metamask",
       image: METAMASK_IMG,
-      onClick: () => payWithWallet("metamask"),
+      onClick: () => mintWithWallet("metamask"),
     });
   }
 
   // trigger walletconnect shit if mobile detected
   useEffect(() => {
-    if (trigger && device.mobile) payWithWallet("walletconnect");
-  }, [device.mobile, trigger]);
+    if (trigger && device.mobile) mintWithWallet("walletconnect");
+  }, [device.mobile, mintWithWallet, trigger]);
 
   return (
     <group name="eth-wallet-selector">
@@ -87,7 +81,7 @@ export default function EthWalletSelector(props: EthWalletSelectorProps) {
           name={`${wallet.name}-button`}
           position-x={(i + 0.5 - wallets.length / 2) * 0.3}
         >
-          <Interactable onClick={() => wallet.onClick(amount, address)}>
+          <Interactable onClick={() => wallet.onClick()}>
             <Image src={wallet.image} size={0.175}/>
           </Interactable>
         </group>

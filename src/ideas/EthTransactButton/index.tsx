@@ -4,55 +4,45 @@ import { GroupProps } from "@react-three/fiber";
 import EthPrice from "./ideas/EthPrice";
 import EthWalletSelector from "./ideas/EthWalletSelector";
 import Panel from "./components/Panel";
-import { ethers, Transaction } from "ethers";
 import Button from "./ideas/Button";
 import { Idea } from "./layers/basis";
-import { analytics } from "./utils/analytics";
+import {getListing, mintFromListing} from "./utils/easely";
+import type {Listing} from "./utils/easely";
+import {TransactionReceipt} from "web3-core";
 
 const FONT_FILE =
   "https://d27rt3a60hh1lx.cloudfront.net/fonts/Quicksand_Bold.otf";
 
 type EthTransactButtonProps = {
+  easelyListingId: string;
+  color: string;
   text: string;
-  amount: number;
-  receiveAddress: string;
-  color?: string;
 } & GroupProps;
 
 export default function EthTransactButton(props: EthTransactButtonProps) {
   const {
-    text = "donate pls",
-    amount = 0.01,
-    receiveAddress = "",
+    text = "Buy NFT",
+    easelyListingId = "",
     color = "black",
     ...restProps
   } = props;
 
-  //found by taking a small sample and getting line of best fit
-  const HEIGHT = 0.25;
-  const WIDTH = Math.max(
-    Math.max(text.length * 0.035 + 0.13, `${amount}`.length * 0.04 + 0.13),
-    0.6
-  );
 
   // internal state
   const seed = useMemo(() => Math.random(), []);
   const [stage, setStage] = useState(0);
   const [error, setError] = useState<string>();
-  const [tx, setTx] = useState<Transaction>();
+  const [listing, setListing] = useState<Listing>();
+  const [tx, setTx] = useState<TransactionReceipt>();
 
   // helper functions
-  const assertTx = (tx: Transaction) => {
-    setStage(2);
-    setTx(tx);
-  };
   const flashError = (s: string) => {
     setError(s);
     setStage(0);
     setTimeout(() => setError(undefined), 5000);
   };
   const openTxHash = () => {
-    if (tx) window.open(`https://etherscan.io/tx/${tx.hash}`);
+    if (tx) window.open(`https://etherscan.io/tx/${tx.transactionHash}`);
   };
   const reset = () => {
     setStage(0);
@@ -60,18 +50,24 @@ export default function EthTransactButton(props: EthTransactButtonProps) {
     setTx(undefined);
   };
   const clickButton = () => {
-    analytics.capture("idea-eth_transact_button-click", props);
     setStage(1);
   };
 
-  // some state hooks
   useEffect(() => {
-    if (!ethers.utils.isAddress(receiveAddress)) {
-      setError("please enter a valid receive address to begin");
-    } else {
-      setError(undefined);
-    }
-  }, [receiveAddress]);
+    getListing(easelyListingId)
+      .then(lst => {
+        console.log(lst);
+        setListing(lst);
+        setError(undefined);
+      })
+      .catch(e => {
+        setError(e);
+      });
+  }, [easelyListingId])
+
+
+  const HEIGHT = 0.25;
+  const WIDTH = 0.6;
 
   return (
     <group name="crypto-transaction-button" {...restProps}>
@@ -86,7 +82,15 @@ export default function EthTransactButton(props: EthTransactButtonProps) {
       </RoundedBox>
 
       <Panel
-        enabled={stage === 0 && !error && !tx}
+        enabled={!listing && !error}
+        width={WIDTH}
+        height={HEIGHT}
+      >
+        Loading...
+      </Panel>
+
+      <Panel
+        enabled={stage === 0 && !!listing && !error && !tx}
         width={WIDTH}
         height={HEIGHT}
         onClick={clickButton}
@@ -94,21 +98,40 @@ export default function EthTransactButton(props: EthTransactButtonProps) {
         <Text font={FONT_FILE} color={color} fontSize={0.075} position-y={0.04}>
           {text}
         </Text>
-        <EthPrice amount={amount} position-y={-0.03} />
       </Panel>
 
       <Panel
-        enabled={stage === 1 && !error && !tx}
+        enabled={stage === 1 && !!listing && !error && !tx}
         width={WIDTH}
         height={HEIGHT}
       >
         <EthWalletSelector
           trigger={stage === 1 && !error && !tx}
-          amount={amount}
-          address={receiveAddress}
+          onConnect={(web3) => {
+            if (!listing) {
+              throw new Error("no listing?");
+            }
+            setStage(2);
+            return mintFromListing(web3, listing, 1)
+          }}
           setError={flashError}
-          setTx={assertTx}
+          setTx={(h) =>{
+            setTx(h);
+            setStage(3);
+          }}
         />
+      </Panel>
+
+      <Panel enabled={stage == 2 && !error && !tx} width={WIDTH} height={HEIGHT}>
+        <Text
+          color="gray"
+          fontSize={0.02}
+          maxWidth={WIDTH * 0.8}
+          position-z={0.03}
+          textAlign="center"
+        >
+          Talking to the blockchain...
+        </Text>
       </Panel>
 
       <Panel enabled={!!tx} width={WIDTH} height={HEIGHT}>

@@ -8,7 +8,7 @@ export default function Starter() {
     <StandardEnvironment>
       <ambientLight />
       <group position={[0, 1, -4]}>
-        <EthTransactButton text="hello" amount={0.01} receiveAddress="0x3a15EBbF9ae932F667076e7B2cfAb8998Aa02753" />
+        <EthTransactButton easelyListingId="lst_c8o3r74ds0m40i5rill0" />
       </group>
       <CloudySky color="white" />
       <TransparentFloor opacity={0.7} />
