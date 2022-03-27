@@ -14,10 +14,15 @@ type Listing = {
   priceInEth: number,
 }
 
+type RandomizedContractDetails = {
+  mintLimitPerTransaction: number,
+}
+
 type ContractDetails = {
   type: ContractType,
   abi: string,
   address: string,
+  randomized?: RandomizedContractDetails,
 }
 
 type StandardCollectionParams = {

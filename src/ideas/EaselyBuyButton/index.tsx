@@ -18,6 +18,14 @@ type EaselyBuyButtonProps = {
   color?: string;
 } & GroupProps;
 
+enum Stage {
+  Initial, // waiting for user to interact with it
+  SelectQuantity, // if listing allows selecting quantity, user can enter a quantity
+  SelectWallet, // select between wallets
+  Processing, // talking to the blockchain
+  Success, // transaction went through
+}
+
 export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
   const {
     text,
@@ -28,8 +36,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
 
 
   // internal state
-  const seed = useMemo(() => Math.random(), []);
-  const [stage, setStage] = useState(0);
+  const [stage, setStage] = useState<Stage>(Stage.Initial);
   const [error, setError] = useState<string>();
   const [listing, setListing] = useState<Listing>();
   const [tx, setTx] = useState<TransactionReceipt>();
@@ -37,14 +44,14 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
   // helper functions
   const flashError = (s: string) => {
     setError(s);
-    setStage(0);
+    setStage(Stage.Initial);
     setTimeout(() => setError(undefined), 5000);
   };
   const openTxHash = () => {
     if (tx) window.open(`https://etherscan.io/tx/${tx.transactionHash}`);
   };
   const reset = () => {
-    setStage(0);
+    setStage(Stage.Initial);
     setError(undefined);
     setTx(undefined);
   };
@@ -129,7 +136,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
           position-z={0.03}
           textAlign="center"
         >
-          Talking to the blockchain...
+          Working on it...
         </Text>
       </Panel>
 
@@ -140,7 +147,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
           position-z={0.03}
           position-y={0.075}
         >
-          success!
+          Success!
         </Text>
         <Button
           onClick={openTxHash}
@@ -148,7 +155,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
           width={5}
           position-y={0.01}
         >
-          view transaction
+          View transaction
         </Button>
         <Button
           onClick={reset}
@@ -156,7 +163,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
           width={5}
           position-y={-0.065}
         >
-          go again
+          Return
         </Button>
       </Panel>
 
