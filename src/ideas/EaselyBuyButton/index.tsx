@@ -5,7 +5,6 @@ import EthPrice from "./ideas/EthPrice";
 import EthWalletSelector from "./ideas/EthWalletSelector";
 import Panel from "./components/Panel";
 import Button from "./ideas/Button";
-import { Idea } from "./layers/basis";
 import {getListing, mintFromListing} from "./utils/easely";
 import type {Listing} from "./utils/easely";
 import {TransactionReceipt} from "web3-core";
@@ -13,16 +12,16 @@ import {TransactionReceipt} from "web3-core";
 const FONT_FILE =
   "https://d27rt3a60hh1lx.cloudfront.net/fonts/Quicksand_Bold.otf";
 
-type EthTransactButtonProps = {
+type EaselyBuyButtonProps = {
   easelyListingId: string;
-  color: string;
   text: string;
+  color?: string;
 } & GroupProps;
 
-export default function EthTransactButton(props: EthTransactButtonProps) {
+export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
   const {
-    text = "Buy NFT",
-    easelyListingId = "",
+    text,
+    easelyListingId,
     color = "black",
     ...restProps
   } = props;
@@ -145,7 +144,6 @@ export default function EthTransactButton(props: EthTransactButtonProps) {
         </Text>
         <Button
           onClick={openTxHash}
-          idea={new Idea().setFromCreation(seed, 0.7, 0.7)}
           size={0.5}
           width={5}
           position-y={0.01}
@@ -154,7 +152,6 @@ export default function EthTransactButton(props: EthTransactButtonProps) {
         </Button>
         <Button
           onClick={reset}
-          idea={new Idea().setFromCreation((seed + 0.5) % 1, 0.7, 0.7)}
           size={0.5}
           width={5}
           position-y={-0.065}
