@@ -1,11 +1,12 @@
 import { RoundedBox, Text } from "@react-three/drei";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { GroupProps } from "@react-three/fiber";
 import EthPrice from "./ideas/EthPrice";
 import EthWalletSelector from "./ideas/EthWalletSelector";
 import Panel from "./components/Panel";
 import Button from "./ideas/Button";
-import {getListing, mintFromListing} from "./utils/easely";
+import QuantitySelector from "./ideas/QuantitySelector";
+import {getListing, mintFromListing, getRandomizedCollectionMintOptions} from "./utils/easely";
 import type {Listing} from "./utils/easely";
 import {TransactionReceipt} from "web3-core";
 
@@ -19,11 +20,11 @@ type EaselyBuyButtonProps = {
 } & GroupProps;
 
 enum Stage {
-  Initial, // waiting for user to interact with it
-  SelectQuantity, // if listing allows selecting quantity, user can enter a quantity
-  SelectWallet, // select between wallets
-  Processing, // talking to the blockchain
-  Success, // transaction went through
+  Initial= "initial", // waiting for user to interact with it
+  SelectQuantity = "selectQuantity", // if listing allows selecting quantity, user can enter a quantity
+  SelectWallet = "selectWallet", // select between wallets
+  Processing = "processing", // talking to the blockchain
+  Success = "success", // transaction went through
 }
 
 export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
@@ -40,6 +41,14 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
   const [error, setError] = useState<string>();
   const [listing, setListing] = useState<Listing>();
   const [tx, setTx] = useState<TransactionReceipt>();
+  const [numberToMint, setNumberToMint] = useState<number>();
+
+  // some configuration
+  const mintOptions = listing ? getRandomizedCollectionMintOptions(listing) : null;
+  let defaultNumberToMint = 1;
+  if (mintOptions && mintOptions.fixedMintsPerTransaction !== 0) {
+    defaultNumberToMint = mintOptions.fixedMintsPerTransaction;
+  }
 
   // helper functions
   const flashError = (s: string) => {
@@ -56,13 +65,19 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
     setTx(undefined);
   };
   const clickButton = () => {
-    setStage(1);
+    console.log(mintOptions)
+    if (listing) {
+      if (mintOptions && mintOptions.fixedMintsPerTransaction === 0 && mintOptions.maxMintsPerTransaction > 1) {
+        setStage(Stage.SelectQuantity);
+        return
+      }
+    }
+    setStage(Stage.SelectWallet);
   };
 
   useEffect(() => {
     getListing(easelyListingId)
       .then(lst => {
-        console.log(lst);
         setListing(lst);
         setError(undefined);
       })
@@ -96,7 +111,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
       </Panel>
 
       <Panel
-        enabled={stage === 0 && !!listing && !error && !tx}
+        enabled={stage === Stage.Initial && !!listing && !error && !tx}
         width={WIDTH}
         height={HEIGHT}
         onClick={clickButton}
@@ -104,34 +119,45 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
         <Text font={FONT_FILE} color={color} fontSize={0.075} position-y={0.04}>
           {text}
         </Text>
+        <EthPrice amount={listing?.priceInEth ?? 0} position-y={-0.03} />
+      </Panel>
+
+      <Panel enabled={stage === Stage.SelectQuantity && !!listing && !error && !tx} width={WIDTH} height={HEIGHT}>
+        <QuantitySelector
+          min={1}
+          max={mintOptions ? mintOptions.maxMintsPerTransaction : 100}
+          initialValue={defaultNumberToMint}
+          onChange={setNumberToMint}
+          onProceed={() => {setStage(Stage.SelectWallet)}}
+        />
       </Panel>
 
       <Panel
-        enabled={stage === 1 && !!listing && !error && !tx}
+        enabled={stage === Stage.SelectWallet && !!listing && !error && !tx}
         width={WIDTH}
         height={HEIGHT}
       >
         <EthWalletSelector
-          trigger={stage === 1 && !error && !tx}
+          trigger={stage === Stage.SelectWallet && !error && !tx}
           onConnect={(web3) => {
             if (!listing) {
               throw new Error("no listing?");
             }
-            setStage(2);
-            return mintFromListing(web3, listing, 1)
+            setStage(Stage.Processing);
+            return mintFromListing(web3, listing, numberToMint || defaultNumberToMint)
           }}
           setError={flashError}
           setTx={(h) =>{
             setTx(h);
-            setStage(3);
+            setStage(Stage.Success);
           }}
         />
       </Panel>
 
-      <Panel enabled={stage == 2 && !error && !tx} width={WIDTH} height={HEIGHT}>
+      <Panel enabled={stage == Stage.Processing && !error && !tx} width={WIDTH} height={HEIGHT}>
         <Text
           color="gray"
-          fontSize={0.02}
+          fontSize={0.04}
           maxWidth={WIDTH * 0.8}
           position-z={0.03}
           textAlign="center"

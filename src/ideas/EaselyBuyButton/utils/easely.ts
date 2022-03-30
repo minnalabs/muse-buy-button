@@ -54,6 +54,13 @@ type RandomizedCollectionRestrictedListingParams = {
   allowedAddress: string,
 }
 
+type RandomizedCollectionMintOptions = {
+  // if the creator has set a fixed number to mint per transaction, otherwise 0
+  fixedMintsPerTransaction: number,
+  // maximum number of mints per transaction
+  maxMintsPerTransaction: number,
+}
+
 enum ListingAccessType {
   General = "GENERAL",
   Restricted = "RESTRICTED",
@@ -75,10 +82,10 @@ const getTotalPrice = (priceInWei: string, mintAmount: number) => {
 const getListingEndpoint = (listingId: string, network: Network): string => {
   switch (network) {
     case "mainnet":
-      return `https://api.easely.io/v1/listings/${listingId}`
+      return `https://api.easely.io/v1/listings/${listingId}?utm_source=muse`
     case "rinkeby":
     case "localhost":
-      return `https://api.${network}.easely.io/v1/listings/${listingId}`
+      return `https://api.${network}.easely.io/v1/listings/${listingId}?utm_source=muse`
   }
 }
 
@@ -94,7 +101,9 @@ const getListingFromNetwork = async (listingId: string, network: Network): Promi
   }
 
   respJSON.network = network;
-  const priceInWei: string = respJSON.unsignedContent.startPrice || respJSON.unsignedContent.price;
+
+  const unsignedContentJSON = JSON.parse(respJSON.unsignedContent)
+  const priceInWei: string = unsignedContentJSON.startPrice || unsignedContentJSON.price;
   respJSON.priceInEth = Number(Web3.utils.fromWei(new BN(priceInWei), 'ether'));
 
   return Promise.resolve(respJSON as Listing);
@@ -178,8 +187,46 @@ const mintFromListing = async (
   }
 }
 
+const isRandomizedCollection = (listing: Listing): boolean => {
+  const contractType = listing.contractDetails.type;
+  return contractType === ContractType.ERC721RandomizedCollectionV2;
+}
+
+const getRandomizedCollectionMintOptions = (listing: Listing): RandomizedCollectionMintOptions | null => {
+  if (!isRandomizedCollection(listing)) {
+    return null;
+  }
+
+  const randomizedContractDetails = listing.contractDetails.randomized;
+  if (!randomizedContractDetails) {
+    return null;
+  }
+
+  let fixedMintsPerTransaction = 0;
+  if (listing.accessType === ListingAccessType.General) {
+    const params = JSON.parse(listing.unsignedContent) as RandomizedCollectionParams;
+    fixedMintsPerTransaction = params.mintAmount;
+  } else if (listing.accessType === ListingAccessType.Restricted) {
+    const params = JSON.parse(listing.unsignedContent) as RandomizedCollectionRestrictedListingParams;
+    fixedMintsPerTransaction = params.amount;
+  } else {
+    return null;
+  }
+
+  let maxMintsPerTransaction = 100;
+  if (listing.contractDetails.type === ContractType.ERC721RandomizedCollectionV2) {
+    maxMintsPerTransaction = 500;
+  }
+
+  return {
+    fixedMintsPerTransaction,
+    maxMintsPerTransaction
+  }
+}
+
 export {
   getListing,
-  mintFromListing
+  mintFromListing,
+  getRandomizedCollectionMintOptions
 };
 export type { Listing };

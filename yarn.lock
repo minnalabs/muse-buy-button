@@ -915,6 +915,18 @@
   dependencies:
     commander "^2.15.1"
 
+"@datadog/browser-core@4.7.0":
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-core/-/browser-core-4.7.0.tgz#3b890f332c564f26c025c6dce295100808373408"
+  integrity sha512-pzFcyurQGQ/QG/ZdGyel/Lf3hhZAa9WyN0Cxn0KyfSCKnyeISbSss1Xy37pSPPOYStkPSueWfaBM8s4s4Rgkmw==
+
+"@datadog/browser-logs@^4.7.0":
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-logs/-/browser-logs-4.7.0.tgz#943c8d5aedd60e8d6a748e37ab698b2fe2403baf"
+  integrity sha512-YWG/JY8/gFLzCBI1xqUF+LLutxITUQR68j317TV0f9eSduB0Qq0mcCGdOVag3Jy2dSPGiun3hFUmBESMs474Ww==
+  dependencies:
+    "@datadog/browser-core" "4.7.0"
+
 "@emotion/babel-plugin@^11.3.0":
   version "11.3.0"
   resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.3.0.tgz#3a16850ba04d8d9651f07f3fb674b3436a4fb9d7"
@@ -1752,6 +1764,13 @@
     utility-types "^3.10.0"
     zustand "^3.3.3"
 
+"@react-three/flex@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@react-three/flex/-/flex-0.7.0.tgz#552f74a6765aa1d2d2e64cddf30bb2d22c2298ef"
+  integrity sha512-Cim/9u6BYuieyZ2NXbE4nbNOqWIyOlT62qlFEQsh6SoMJFde0pBICZupgRlI5VkWX6c2aMXoFkLTxlX6AEmsjQ==
+  dependencies:
+    yoga-layout-prebuilt "^1.9.6"
+
 "@react-three/xr@^3.0.1":
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/@react-three/xr/-/xr-3.1.2.tgz#703d98f94f65e5aea7f650ec3f55552004e831bc"
@@ -1981,6 +2000,11 @@
     "@types/webpack-sources" "*"
     anymatch "^3.0.0"
     source-map "^0.6.0"
+
+"@types/yoga-layout@1.9.2":
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/@types/yoga-layout/-/yoga-layout-1.9.2.tgz#efaf9e991a7390dc081a0b679185979a83a9639a"
+  integrity sha512-S9q47ByT2pPvD65IvrWp7qppVMpk9WGMbVq9wbWZOHg6tnXSD4vyhao6nOSBwwfDdV2p3Kx9evA9vI+XWTfDvw==
 
 "@typescript-eslint/eslint-plugin@^3.2.0":
   version "3.10.1"
@@ -7786,6 +7810,13 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-0.1.0.tgz#0294eb3dee05028d31ee1a5fa2c556a6aaf10a1b"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+yoga-layout-prebuilt@^1.9.6:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/yoga-layout-prebuilt/-/yoga-layout-prebuilt-1.10.0.tgz#2936fbaf4b3628ee0b3e3b1df44936d6c146faa6"
+  integrity sha512-YnOmtSbv4MTf7RGJMK0FvZ+KD8OEe/J5BNnR0GHhD8J/XcG/Qvxgszm0Un6FTHWW4uHlTgP0IztiXQnGyIR45g==
+  dependencies:
+    "@types/yoga-layout" "1.9.2"
 
 zstddec@^0.0.2:
   version "0.0.2"
