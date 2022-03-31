@@ -1,5 +1,5 @@
 import { Text } from "@react-three/drei";
-import {ComponentProps, useState} from "react";
+import {ComponentProps, useCallback, useState} from "react";
 import TextInput from "../components/TextInput";
 import Button from "./Button";
 
@@ -23,9 +23,9 @@ type Props = {
 
 const QuantitySelector = (props: Props): JSX.Element => {
   const { min, max, initialValue, onChange, onProceed, onBack, ...rest } = props;
-  const [value, setValue] = useState(initialValue.toString() ?? "1");
+  const [value, setValue] = useState(initialValue.toString());
   const [error, setError] = useState<string>();
-  const setValueWithCallback = (value: string) => {
+  const setValueWithCallback = useCallback((value: string) => {
     setValue(value);
     const asInt = parseInt(value);
     if (!isNaN(asInt) && asInt >= min && asInt <= max) {
@@ -34,7 +34,7 @@ const QuantitySelector = (props: Props): JSX.Element => {
     } else {
       setError(`Must be between ${min} and ${max}.`);
     }
-  }
+  }, [min, max, onChange]);
   const headerTextStyles: TextStyles = {
     font: FONT_FILE,
     color: "black",
@@ -60,9 +60,9 @@ const QuantitySelector = (props: Props): JSX.Element => {
         <Text {...headerTextStyles} position-y={0.04}>How many?</Text>
       </group>
       {error ? (
-        <Text {...errorTextStyles} position-y={-0.1}>{error}</Text>
+        <Text {...errorTextStyles} position-x={-0.07} position-y={-0.1}>{error}</Text>
       ): null}
-      <group name="selector" position-x={-0.05} position-y={-0.04}>
+      <group name="selector" position-x={-0.07} position-y={-0.04}>
         <TextInput value={value.toString()} setValue={setValueWithCallback} />
       </group>
       <Button
@@ -72,7 +72,7 @@ const QuantitySelector = (props: Props): JSX.Element => {
         position-x={0.18}
         position-y={-0.04}
       >
-        Go
+        Buy
       </Button>
       <Button
         onClick={onBack}

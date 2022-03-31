@@ -1,5 +1,5 @@
 import { RoundedBox, Text } from "@react-three/drei";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { GroupProps } from "@react-three/fiber";
 import EthPrice from "./ideas/EthPrice";
 import EthWalletSelector from "./ideas/EthWalletSelector";
@@ -7,7 +7,7 @@ import Panel from "./components/Panel";
 import Button from "./ideas/Button";
 import QuantitySelector from "./ideas/QuantitySelector";
 import {getListing, mintFromListing, getRandomizedCollectionMintOptions} from "./utils/easely";
-import type {Listing} from "./utils/easely";
+import type {Listing, RandomizedCollectionMintOptions} from "./utils/easely";
 import {TransactionReceipt} from "web3-core";
 
 const FONT_FILE =
@@ -42,14 +42,12 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
   const [listing, setListing] = useState<Listing>();
   const [tx, setTx] = useState<TransactionReceipt>();
   const [numberToMint, setNumberToMint] = useState<number>();
+  const [mintOptions, setMintOptions] = useState<RandomizedCollectionMintOptions | null>(null);
 
-  // some configuration
-  const mintOptions = listing ? getRandomizedCollectionMintOptions(listing) : null;
   let defaultNumberToMint = 1;
   if (mintOptions && mintOptions.fixedMintsPerTransaction !== 0) {
     defaultNumberToMint = mintOptions.fixedMintsPerTransaction;
   }
-  const canSelectQuantity = mintOptions && mintOptions.fixedMintsPerTransaction === 0 && mintOptions.maxMintsPerTransaction > 1;
 
   // helper functions
   const flashError = (s: string) => {
@@ -66,7 +64,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
     setTx(undefined);
   };
   const clickButton = () => {
-    if (canSelectQuantity) {
+    if (mintOptions && mintOptions.canSelectQuantity) {
       setStage(Stage.SelectQuantity);
       return;
     }
@@ -77,13 +75,13 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
     getListing(easelyListingId)
       .then(lst => {
         setListing(lst);
+        setMintOptions(getRandomizedCollectionMintOptions(lst));
         setError(undefined);
       })
       .catch(e => {
         setError(e);
       });
   }, [easelyListingId])
-
 
   const HEIGHT = 0.25;
   const WIDTH = 0.6;
@@ -145,7 +143,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
             setStage(Stage.Processing);
             return mintFromListing(web3, listing, numberToMint || defaultNumberToMint)
           }}
-          onBack={() => {setStage(canSelectQuantity ? Stage.SelectQuantity : Stage.Initial)}}
+          onBack={() => {setStage(mintOptions?.canSelectQuantity ? Stage.SelectQuantity : Stage.Initial)}}
           setError={flashError}
           setTx={(h) =>{
             setTx(h);

@@ -59,6 +59,8 @@ type RandomizedCollectionMintOptions = {
   fixedMintsPerTransaction: number,
   // maximum number of mints per transaction
   maxMintsPerTransaction: number,
+  // whether the user can specify how many NFTs they want
+  canSelectQuantity: boolean,
 }
 
 enum ListingAccessType {
@@ -218,9 +220,12 @@ const getRandomizedCollectionMintOptions = (listing: Listing): RandomizedCollect
     maxMintsPerTransaction = 500;
   }
 
+  const canSelectQuantity = fixedMintsPerTransaction === 0 && maxMintsPerTransaction > 1;
+
   return {
     fixedMintsPerTransaction,
-    maxMintsPerTransaction
+    maxMintsPerTransaction,
+    canSelectQuantity
   }
 }
 
@@ -229,4 +234,4 @@ export {
   mintFromListing,
   getRandomizedCollectionMintOptions
 };
-export type { Listing };
+export type { Listing, RandomizedCollectionMintOptions };
