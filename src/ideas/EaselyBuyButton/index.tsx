@@ -49,6 +49,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
   if (mintOptions && mintOptions.fixedMintsPerTransaction !== 0) {
     defaultNumberToMint = mintOptions.fixedMintsPerTransaction;
   }
+  const canSelectQuantity = mintOptions && mintOptions.fixedMintsPerTransaction === 0 && mintOptions.maxMintsPerTransaction > 1;
 
   // helper functions
   const flashError = (s: string) => {
@@ -65,12 +66,9 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
     setTx(undefined);
   };
   const clickButton = () => {
-    console.log(mintOptions)
-    if (listing) {
-      if (mintOptions && mintOptions.fixedMintsPerTransaction === 0 && mintOptions.maxMintsPerTransaction > 1) {
-        setStage(Stage.SelectQuantity);
-        return
-      }
+    if (canSelectQuantity) {
+      setStage(Stage.SelectQuantity);
+      return;
     }
     setStage(Stage.SelectWallet);
   };
@@ -129,6 +127,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
           initialValue={defaultNumberToMint}
           onChange={setNumberToMint}
           onProceed={() => {setStage(Stage.SelectWallet)}}
+          onBack={() => {setStage(Stage.Initial)}}
         />
       </Panel>
 
@@ -146,6 +145,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
             setStage(Stage.Processing);
             return mintFromListing(web3, listing, numberToMint || defaultNumberToMint)
           }}
+          onBack={() => {setStage(canSelectQuantity ? Stage.SelectQuantity : Stage.Initial)}}
           setError={flashError}
           setTx={(h) =>{
             setTx(h);
@@ -156,6 +156,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
 
       <Panel enabled={stage == Stage.Processing && !error && !tx} width={WIDTH} height={HEIGHT}>
         <Text
+          font={FONT_FILE}
           color="gray"
           fontSize={0.04}
           maxWidth={WIDTH * 0.8}
@@ -168,10 +169,11 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
 
       <Panel enabled={!!tx} width={WIDTH} height={HEIGHT}>
         <Text
+          font={FONT_FILE}
           color="green"
           fontSize={0.03}
           position-z={0.03}
-          position-y={0.075}
+          position-y={0.05}
         >
           Success!
         </Text>
@@ -179,7 +181,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
           onClick={openTxHash}
           size={0.5}
           width={5}
-          position-y={0.01}
+          position-y={-0.015}
         >
           View transaction
         </Button>
@@ -196,6 +198,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
       <Panel enabled={!!error} width={WIDTH} height={HEIGHT}>
         <Text
           color="red"
+          font={FONT_FILE}
           fontSize={0.02}
           maxWidth={WIDTH * 0.8}
           position-z={0.03}

@@ -16,11 +16,13 @@ type Props = {
   onChange: (value: number) => void,
   // callback for when user hits proceed button
   onProceed: () => void,
-  textStyles?: TextStyles;
+  // callback for when user hits back
+  onBack: () => void,
+  textStyles?: TextStyles,
 }
 
 const QuantitySelector = (props: Props): JSX.Element => {
-  const { min, max, initialValue, onChange, onProceed, ...rest } = props;
+  const { min, max, initialValue, onChange, onProceed, onBack, ...rest } = props;
   const [value, setValue] = useState(initialValue.toString() ?? "1");
   const [error, setError] = useState<string>();
   const setValueWithCallback = (value: string) => {
@@ -71,6 +73,16 @@ const QuantitySelector = (props: Props): JSX.Element => {
         position-y={-0.04}
       >
         Go
+      </Button>
+      <Button
+        onClick={onBack}
+        size={0.5}
+        width={0.5}
+        position-x={-0.25}
+        position-y={0.09}
+        color="gray"
+      >
+        {"<"}
       </Button>
     </group>
 
