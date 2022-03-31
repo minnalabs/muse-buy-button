@@ -1,6 +1,6 @@
 import { Text } from "@react-three/drei";
 import { ComponentProps, useCallback, useRef, useState } from "react";
-import TextInput from "../components/TextInput";
+import NumberInput from "../components/NumberInput";
 import Button from "./Button";
 
 type TextStyles = Partial<ComponentProps<typeof Text>>;
@@ -71,7 +71,7 @@ const QuantitySelector = (props: Props): JSX.Element => {
         </Text>
       ) : null}
       <group name="selector" position-x={-0.07} position-y={-0.04}>
-        <TextInput value={value.toString()} setValue={setValueWithCallback} />
+        <NumberInput value={value.toString()} setValue={setValueWithCallback} />
       </group>
       <Button
         onClick={onClick}

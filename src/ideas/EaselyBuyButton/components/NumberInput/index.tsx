@@ -2,10 +2,10 @@ import { RoundedBox, Text } from "@react-three/drei";
 import { GroupProps } from "@react-three/fiber";
 import React, { useRef } from "react";
 import { animated, useSpring } from "react-spring/three";
-import { useTextInput } from "./utils/input";
+import { useNumberInput } from "./utils/input";
 import { Interactable } from "spacesvr";
 
-type TextProps = {
+type Props = {
   value: string;
   setValue: (s: string) => void;
   onSubmit?: () => void;
@@ -15,12 +15,12 @@ type TextProps = {
 const FONT_FILE =
   "https://d27rt3a60hh1lx.cloudfront.net/fonts/Quicksand_Bold.otf";
 
-export default function TextInput(props: TextProps) {
+export default function NumberInput(props: Props) {
   const { value, setValue, onChange, ...rest } = props;
 
   const textRef = useRef<any>();
 
-  const { focused, cursorPos, focusInput } = useTextInput(
+  const { focused, cursorPos, focusInput } = useNumberInput(
     value,
     setValue,
     onChange

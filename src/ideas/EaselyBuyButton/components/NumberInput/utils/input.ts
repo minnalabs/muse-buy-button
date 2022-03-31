@@ -3,7 +3,7 @@ import { useEnvironment, usePlayer } from "spacesvr";
 import { Vector3 } from "three";
 
 export const useHTMLInput = (
-  type: "file" | "text"
+  type: "file" | "text" | "number"
 ): HTMLInputElement | undefined => {
   const [input, setInput] = useState<HTMLInputElement>();
 
@@ -28,12 +28,12 @@ export const useHTMLInput = (
   return input;
 };
 
-export const useTextInput = (
+export const useNumberInput = (
   value: string,
   setValue: (s: string) => void,
   onChange?: (s: string) => string
 ) => {
-  const input = useHTMLInput("text");
+  const input = useHTMLInput("number");
 
   const { paused, device } = useEnvironment();
   const { controls, velocity } = usePlayer();
