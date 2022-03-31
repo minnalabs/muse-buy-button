@@ -8,7 +8,10 @@ export default function Starter() {
     <StandardEnvironment>
       <ambientLight />
       <group position={[0, 1, -4]}>
-        <EaselyBuyButton text="Buy" easelyListingId="lst_c90d4fkds0m70adpasu0" />
+        <EaselyBuyButton
+          text="Buy"
+          easelyListingId="lst_c90d4fkds0m70adpasu0"
+        />
       </group>
       <CloudySky color="white" />
       <TransparentFloor opacity={0.7} />

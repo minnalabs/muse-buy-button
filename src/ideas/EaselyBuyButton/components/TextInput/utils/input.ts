@@ -47,7 +47,7 @@ export const useTextInput = (
     if (!input) return;
 
     input.addEventListener("focus", () => {
-      setFocused(true)
+      setFocused(true);
       // reset values on focus
       setValue("");
       if (onChange) {

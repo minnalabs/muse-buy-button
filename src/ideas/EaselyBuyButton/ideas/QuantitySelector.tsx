@@ -1,5 +1,5 @@
 import { Text } from "@react-three/drei";
-import {ComponentProps, useCallback, useRef, useState} from "react";
+import { ComponentProps, useCallback, useRef, useState } from "react";
 import TextInput from "../components/TextInput";
 import Button from "./Button";
 
@@ -9,32 +9,36 @@ const FONT_FILE =
   "https://d27rt3a60hh1lx.cloudfront.net/fonts/Quicksand_Bold.otf";
 
 type Props = {
-  min: number,
-  max: number,
-  initialValue: number,
+  min: number;
+  max: number;
+  initialValue: number;
   // callback for when user changes value
-  onChange: (value: number) => void,
+  onChange: (value: number) => void;
   // callback for when user hits proceed button
-  onProceed: () => void,
+  onProceed: () => void;
   // callback for when user hits back
-  onBack: () => void,
-  textStyles?: TextStyles,
-}
+  onBack: () => void;
+  textStyles?: TextStyles;
+};
 
 const QuantitySelector = (props: Props): JSX.Element => {
-  const { min, max, initialValue, onChange, onProceed, onBack, ...rest } = props;
+  const { min, max, initialValue, onChange, onProceed, onBack, ...rest } =
+    props;
   const [value, setValue] = useState(initialValue.toString());
   const [error, setError] = useState<string>();
-  const setValueWithCallback = useCallback((value: string) => {
-    setValue(value);
-    const asInt = parseInt(value);
-    if (!isNaN(asInt) && asInt >= min && asInt <= max) {
-      setError(undefined);
-      onChange(asInt);
-    } else {
-      setError(`Must be between ${min} and ${max}.`);
-    }
-  }, [min, max, onChange]);
+  const setValueWithCallback = useCallback(
+    (value: string) => {
+      setValue(value);
+      const asInt = parseInt(value);
+      if (!isNaN(asInt) && asInt >= min && asInt <= max) {
+        setError(undefined);
+        onChange(asInt);
+      } else {
+        setError(`Must be between ${min} and ${max}.`);
+      }
+    },
+    [min, max, onChange]
+  );
   const headerTextStyles: TextStyles = {
     font: FONT_FILE,
     color: "black",
@@ -48,20 +52,24 @@ const QuantitySelector = (props: Props): JSX.Element => {
 
   const onClick = () => {
     if (error) {
-      return
+      return;
     }
 
     onProceed();
-  }
+  };
 
   return (
-    <group name="quantity-selector" {...rest} >
+    <group name="quantity-selector" {...rest}>
       <group name="header">
-        <Text {...headerTextStyles} position-y={0.04}>How many?</Text>
+        <Text {...headerTextStyles} position-y={0.04}>
+          How many?
+        </Text>
       </group>
       {error ? (
-        <Text {...errorTextStyles} position-x={-0.07} position-y={-0.1}>{error}</Text>
-      ): null}
+        <Text {...errorTextStyles} position-x={-0.07} position-y={-0.1}>
+          {error}
+        </Text>
+      ) : null}
       <group name="selector" position-x={-0.07} position-y={-0.04}>
         <TextInput value={value.toString()} setValue={setValueWithCallback} />
       </group>
@@ -85,8 +93,7 @@ const QuantitySelector = (props: Props): JSX.Element => {
         {"<"}
       </Button>
     </group>
-
   );
-}
+};
 
 export default QuantitySelector;

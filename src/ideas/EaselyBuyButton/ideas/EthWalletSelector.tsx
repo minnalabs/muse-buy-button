@@ -1,11 +1,8 @@
-import {
-  getMetamaskProvider,
-  getWalletConnectProvider,
-} from "../utils/eth";
+import { getMetamaskProvider, getWalletConnectProvider } from "../utils/eth";
 import { Interactable, Image, useEnvironment } from "spacesvr";
 import { useEffect } from "react";
 import Web3 from "web3";
-import {TransactionReceipt} from "web3-core";
+import { TransactionReceipt } from "web3-core";
 import Button from "./Button";
 
 const METAMASK_IMG =
@@ -23,16 +20,16 @@ type Wallet = {
 
 type EthWalletSelectorProps = {
   trigger: boolean;
-  onConnect: (web3: Web3) => Promise<TransactionReceipt>
-  onBack: () => void,
+  onConnect: (web3: Web3) => Promise<TransactionReceipt>;
+  onBack: () => void;
   setError: (e: string) => void;
   setTx: (tx: TransactionReceipt) => void;
 };
 
 export default function EthWalletSelector(props: EthWalletSelectorProps) {
-  const {trigger, onConnect, onBack, setError, setTx} = props;
+  const { trigger, onConnect, onBack, setError, setTx } = props;
 
-  const {device} = useEnvironment();
+  const { device } = useEnvironment();
 
   const mintWithWallet = async (walletType: WalletType) => {
     try {
@@ -84,7 +81,7 @@ export default function EthWalletSelector(props: EthWalletSelectorProps) {
           position-x={(i + 0.5 - wallets.length / 2) * 0.22}
         >
           <Interactable onClick={() => wallet.onClick()}>
-            <Image src={wallet.image} size={0.175}/>
+            <Image src={wallet.image} size={0.175} />
           </Interactable>
         </group>
       ))}
