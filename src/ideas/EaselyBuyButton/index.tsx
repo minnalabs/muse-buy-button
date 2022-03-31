@@ -118,16 +118,19 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
         <EthPrice amount={listing?.priceInEth ?? 0} position-y={-0.03} />
       </Panel>
 
-      <Panel enabled={stage === Stage.SelectQuantity && !!listing && !error && !tx} width={WIDTH} height={HEIGHT}>
-        <QuantitySelector
-          min={1}
-          max={mintOptions ? mintOptions.maxMintsPerTransaction : 100}
-          initialValue={defaultNumberToMint}
-          onChange={setNumberToMint}
-          onProceed={() => {setStage(Stage.SelectWallet)}}
-          onBack={() => {setStage(Stage.Initial)}}
-        />
-      </Panel>
+      {mintOptions && mintOptions.canSelectQuantity
+        ? <Panel enabled={stage === Stage.SelectQuantity && !!listing && !error && !tx} width={WIDTH} height={HEIGHT}>
+          <QuantitySelector
+            min={1}
+            max={mintOptions.maxMintsPerTransaction}
+            initialValue={defaultNumberToMint}
+            onChange={setNumberToMint}
+            onProceed={() => {setStage(Stage.SelectWallet)}}
+            onBack={() => {setStage(Stage.Initial)}}
+          />
+        </Panel>
+        : null
+      }
 
       <Panel
         enabled={stage === Stage.SelectWallet && !!listing && !error && !tx}
