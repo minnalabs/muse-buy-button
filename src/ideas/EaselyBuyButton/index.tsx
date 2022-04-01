@@ -55,7 +55,13 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
     setTimeout(() => setError(undefined), 5000);
   };
   const openTxHash = () => {
-    if (tx) window.open(`https://etherscan.io/tx/${tx.transactionHash}`);
+    if (tx) {
+      if (listing?.network === "rinkeby") {
+        window.open(`https://rinkeby.etherscan.io/tx/${tx.transactionHash}`)
+      } else {
+        window.open(`https://etherscan.io/tx/${tx.transactionHash}`)
+      }
+    }
   };
   const reset = () => {
     setStage(Stage.Initial);

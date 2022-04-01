@@ -73,7 +73,7 @@ enum ContractType {
   ERC721StandardCollection = "ERC721_STANDARD_COLLECTION",
 }
 
-type Network = "mainnet" | "rinkeby" | "localhost";
+type Network = "mainnet" | "rinkeby"
 
 const getTotalPrice = (priceInWei: string, mintAmount: number) => {
   const price = new BN(priceInWei);
@@ -86,8 +86,7 @@ const getListingEndpoint = (listingId: string, network: Network): string => {
     case "mainnet":
       return `https://api.easely.io/v1/listings/${listingId}?utm_source=muse`;
     case "rinkeby":
-    case "localhost":
-      return `https://api.${network}.easely.io/v1/listings/${listingId}?utm_source=muse`;
+      return `https://api.rinkeby.easely.io/v1/listings/${listingId}?utm_source=muse`;
   }
 };
 
@@ -116,7 +115,12 @@ const getListingFromNetwork = async (
 };
 
 const getListing = async (listingId: string): Promise<Listing> => {
-  return getListingFromNetwork(listingId, "rinkeby");
+  try {
+    const listing = await getListingFromNetwork(listingId, "mainnet")
+    return Promise.resolve(listing)
+  } catch (e) {
+    return getListingFromNetwork(listingId, "rinkeby")
+  }
 };
 
 const mintFromRandomizedListing = async (
@@ -253,11 +257,12 @@ const getRandomizedCollectionMintOptions = (
     return null;
   }
 
-  let maxMintsPerTransaction = 100;
-  if (
-    listing.contractDetails.type === ContractType.ERC721RandomizedCollectionV2
-  ) {
-    maxMintsPerTransaction = 500;
+  let maxMintsPerTransaction = randomizedContractDetails.mintLimitPerTransaction;
+  if (maxMintsPerTransaction === 0) {
+    if (listing.contractDetails.type === ContractType.ERC721RandomizedCollectionV2) {
+      maxMintsPerTransaction = 500;
+    }
+    maxMintsPerTransaction = 100;
   }
 
   const canSelectQuantity =
