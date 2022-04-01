@@ -1,10 +1,9 @@
 import Web3 from "web3";
-import { WalletConnectSDK } from "./walletconnect";
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
 declare global {
   interface Window {
     ethereum: any;
-    web3: any;
   }
 }
 
@@ -15,10 +14,9 @@ export const getMetamaskProvider = async (): Promise<Web3> => {
 };
 
 export const getWalletConnectProvider = async (): Promise<Web3> => {
-  await WalletConnectSDK.connect();
-  const walletConnectProvider = new WalletConnectSDK.getWeb3Provider({
+  const provider = new WalletConnectProvider({
     infuraId: "40fe055d5aa24c7e950dcdd67c2835c1",
   });
-  await walletConnectProvider.enable();
-  return new Web3(walletConnectProvider);
+  await provider.enable();
+  return new Web3(provider as any);
 };
