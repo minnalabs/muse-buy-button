@@ -22,8 +22,16 @@ type Props = {
 };
 
 const QuantitySelector = (props: Props): JSX.Element => {
-  const { min, max, initialValue, onChange, onProceed, onBack, ...rest } =
-    props;
+  const {
+    min,
+    max,
+    initialValue,
+    onChange,
+    onProceed,
+    onBack,
+    textStyles,
+    ...rest
+  } = props;
   const [value, setValue] = useState(initialValue.toString());
   const [error, setError] = useState<string>();
   const setValueWithCallback = useCallback(
@@ -43,6 +51,7 @@ const QuantitySelector = (props: Props): JSX.Element => {
     font: FONT_FILE,
     color: "black",
     fontSize: 0.06,
+    ...textStyles,
   };
   const errorTextStyles: TextStyles = {
     ...headerTextStyles,

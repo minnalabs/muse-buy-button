@@ -125,7 +125,11 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
         <Text font={FONT_FILE} color={color} fontSize={0.075} position-y={0.04}>
           {text}
         </Text>
-        <EthPrice amount={listing?.priceInEth ?? 0} position-y={-0.03} />
+        <EthPrice
+          amount={listing?.priceInEth ?? 0}
+          position-y={-0.03}
+          textStyles={{ color }}
+        />
       </Panel>
 
       {mintOptions && mintOptions.canSelectQuantity ? (
@@ -145,6 +149,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
             onBack={() => {
               setStage(Stage.Initial);
             }}
+            textStyles={{ color }}
           />
         </Panel>
       ) : null}
@@ -188,7 +193,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
       >
         <Text
           font={FONT_FILE}
-          color="gray"
+          color={color}
           fontSize={0.04}
           maxWidth={WIDTH * 0.8}
           position-z={0.03}
