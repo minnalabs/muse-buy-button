@@ -88,6 +88,7 @@ const QuantitySelector = (props: Props): JSX.Element => {
         width={1}
         position-x={0.18}
         position-y={-0.04}
+        textStyles={headerTextStyles}
       >
         Buy
       </Button>

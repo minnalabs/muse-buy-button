@@ -11,6 +11,7 @@ export default function Starter() {
         <EaselyBuyButton
           text="Buy"
           easelyListingId="lst_c90d4fkds0m70adpasu0"
+          color="blue"
         />
       </group>
       <CloudySky color="white" />
