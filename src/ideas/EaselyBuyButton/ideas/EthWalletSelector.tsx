@@ -1,6 +1,5 @@
-import { getMetamaskProvider, getWalletConnectProvider } from "../utils/eth";
-import { Interactable, Image, useEnvironment } from "spacesvr";
-import { useEffect } from "react";
+import { getMetamaskProvider } from "../utils/eth";
+import { Interactable, Image } from "spacesvr";
 import Web3 from "web3";
 import { TransactionReceipt } from "web3-core";
 import Button from "./Button";
@@ -8,9 +7,7 @@ import Button from "./Button";
 const METAMASK_IMG =
   "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/800px-MetaMask_Fox.svg.png";
 
-const WALLETCONNECT_IMAGE = "https://i.imgur.com/6W0yKmv.png";
-
-type WalletType = "metamask" | "walletconnect";
+type WalletType = "metamask";
 
 type Wallet = {
   name: string;
@@ -19,7 +16,6 @@ type Wallet = {
 };
 
 type EthWalletSelectorProps = {
-  trigger: boolean;
   onConnect: (web3: Web3) => Promise<TransactionReceipt>;
   onBack: () => void;
   setError: (e: string) => void;
@@ -27,18 +23,13 @@ type EthWalletSelectorProps = {
 };
 
 export default function EthWalletSelector(props: EthWalletSelectorProps) {
-  const { trigger, onConnect, onBack, setError, setTx } = props;
-
-  const { device } = useEnvironment();
+  const { onConnect, onBack, setError, setTx } = props;
 
   const mintWithWallet = async (walletType: WalletType) => {
     try {
       let web3;
       if (walletType === "metamask") {
         web3 = await getMetamaskProvider();
-      }
-      if (walletType === "walletconnect") {
-        web3 = await getWalletConnectProvider();
       }
       if (!web3) {
         throw Error("wallet not found");
@@ -51,26 +42,13 @@ export default function EthWalletSelector(props: EthWalletSelectorProps) {
     }
   };
 
-  // build wallet selections
   const wallets: Wallet[] = [
     {
-      name: "walletconnect",
-      image: WALLETCONNECT_IMAGE,
-      onClick: () => mintWithWallet("walletconnect"),
-    },
-  ];
-  if (!device.mobile) {
-    wallets.unshift({
       name: "metamask",
       image: METAMASK_IMG,
       onClick: () => mintWithWallet("metamask"),
-    });
-  }
-
-  // trigger walletconnect shit if mobile detected
-  useEffect(() => {
-    if (trigger && device.mobile) mintWithWallet("walletconnect");
-  }, [device.mobile, mintWithWallet, trigger]);
+    }
+  ];
 
   return (
     <group name="eth-wallet-selector">

@@ -13,7 +13,6 @@
     "@react-three/drei": "7.0.6",
     "@react-three/fiber": "6.0.14",
     "@types/web3": "^1.2.2",
-    "@walletconnect/web3-provider": "^1.7.7",
     "next": "^10.0.9",
     "next-pwa": "^3.1.0",
     "react": "^17.0.0",

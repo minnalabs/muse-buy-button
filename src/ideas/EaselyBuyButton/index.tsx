@@ -1,5 +1,5 @@
 import { RoundedBox, Text } from "@react-three/drei";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { GroupProps } from "@react-three/fiber";
 import EthPrice from "./ideas/EthPrice";
 import EthWalletSelector from "./ideas/EthWalletSelector";
@@ -146,7 +146,6 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
         height={HEIGHT}
       >
         <EthWalletSelector
-          trigger={stage === Stage.SelectWallet && !error && !tx}
           onConnect={(web3) => {
             if (!listing) {
               throw new Error("no listing?");

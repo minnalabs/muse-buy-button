@@ -1,5 +1,5 @@
 import { Text } from "@react-three/drei";
-import { ComponentProps, useCallback, useRef, useState } from "react";
+import { ComponentProps, useCallback, useState } from "react";
 import NumberInput from "../components/NumberInput";
 import Button from "./Button";
 
