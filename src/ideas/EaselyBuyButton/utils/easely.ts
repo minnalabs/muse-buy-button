@@ -101,7 +101,7 @@ const getListingFromNetwork = async (
 
   const respJSON = await resp.json();
   if (!respJSON) {
-    throw new Error("listing not found");
+    throw new Error(`Listing ${listingId} not found`);
   }
 
   respJSON.network = network;
