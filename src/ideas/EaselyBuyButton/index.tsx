@@ -53,7 +53,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
     if (e instanceof Error) {
       setError(e.message);
     } else {
-      setError(String(e))
+      setError(String(e));
     }
 
     setStage(Stage.Initial);
@@ -62,9 +62,9 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
   const openTxHash = () => {
     if (tx) {
       if (listing?.network === "rinkeby") {
-        window.open(`https://rinkeby.etherscan.io/tx/${tx.transactionHash}`)
+        window.open(`https://rinkeby.etherscan.io/tx/${tx.transactionHash}`);
       } else {
-        window.open(`https://etherscan.io/tx/${tx.transactionHash}`)
+        window.open(`https://etherscan.io/tx/${tx.transactionHash}`);
       }
     }
   };

@@ -33,7 +33,7 @@ export default function EthWalletSelector(props: EthWalletSelectorProps) {
       }
       if (!web3) {
         setError("No wallet found");
-        return
+        return;
       }
       const tx = await onConnect(web3);
       setTx(tx);
@@ -47,7 +47,7 @@ export default function EthWalletSelector(props: EthWalletSelectorProps) {
       name: "metamask",
       image: METAMASK_IMG,
       onClick: () => mintWithWallet("metamask"),
-    }
+    },
   ];
 
   return (

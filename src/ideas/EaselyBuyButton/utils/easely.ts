@@ -73,7 +73,7 @@ enum ContractType {
   ERC721StandardCollection = "ERC721_STANDARD_COLLECTION",
 }
 
-type Network = "mainnet" | "rinkeby"
+type Network = "mainnet" | "rinkeby";
 
 const getTotalPrice = (priceInWei: string, mintAmount: number) => {
   const price = new BN(priceInWei);
@@ -116,10 +116,10 @@ const getListingFromNetwork = async (
 
 const getListing = async (listingId: string): Promise<Listing> => {
   try {
-    const listing = await getListingFromNetwork(listingId, "mainnet")
-    return Promise.resolve(listing)
+    const listing = await getListingFromNetwork(listingId, "mainnet");
+    return Promise.resolve(listing);
   } catch (e) {
-    return getListingFromNetwork(listingId, "rinkeby")
+    return getListingFromNetwork(listingId, "rinkeby");
   }
 };
 
@@ -257,9 +257,12 @@ const getRandomizedCollectionMintOptions = (
     return null;
   }
 
-  let maxMintsPerTransaction = randomizedContractDetails.mintLimitPerTransaction;
+  let maxMintsPerTransaction =
+    randomizedContractDetails.mintLimitPerTransaction;
   if (maxMintsPerTransaction === 0) {
-    if (listing.contractDetails.type === ContractType.ERC721RandomizedCollectionV2) {
+    if (
+      listing.contractDetails.type === ContractType.ERC721RandomizedCollectionV2
+    ) {
       maxMintsPerTransaction = 500;
     }
     maxMintsPerTransaction = 100;
