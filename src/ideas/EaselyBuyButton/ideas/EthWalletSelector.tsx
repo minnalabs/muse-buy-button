@@ -32,12 +32,12 @@ export default function EthWalletSelector(props: EthWalletSelectorProps) {
         web3 = await getMetamaskProvider();
       }
       if (!web3) {
-        throw Error("wallet not found");
+        setError("No wallet found");
+        return
       }
       const tx = await onConnect(web3);
       setTx(tx);
     } catch (e) {
-      console.error(e);
       setError(e.message || "unknown error");
     }
   };

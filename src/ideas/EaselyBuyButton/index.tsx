@@ -18,7 +18,7 @@ const FONT_FILE =
   "https://d27rt3a60hh1lx.cloudfront.net/fonts/Quicksand_Bold.otf";
 
 type EaselyBuyButtonProps = {
-  easelyListingId: string;
+  easelyListingId?: string;
   text: string;
   color?: string;
 } & GroupProps;
@@ -49,8 +49,13 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
   }
 
   // helper functions
-  const flashError = (s: string) => {
-    setError(s);
+  const flashError = (e: any) => {
+    if (e instanceof Error) {
+      setError(e.message);
+    } else {
+      setError(String(e))
+    }
+
     setStage(Stage.Initial);
     setTimeout(() => setError(undefined), 5000);
   };
@@ -77,6 +82,10 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
   };
 
   useEffect(() => {
+    if (!easelyListingId) {
+      return;
+    }
+
     getListing(easelyListingId)
       .then((lst) => {
         setListing(lst);
@@ -84,7 +93,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
         setError(undefined);
       })
       .catch((e) => {
-        setError(e);
+        flashError(e);
       });
   }, [easelyListingId]);
 
