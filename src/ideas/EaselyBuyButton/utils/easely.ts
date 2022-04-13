@@ -127,7 +127,8 @@ const mintFromRandomizedListing = async (
   contract: Contract,
   listing: Listing,
   numberToMint: number,
-  account: string
+  account: string,
+  setTxHash: (hash: string) => void
 ): Promise<TransactionReceipt> => {
   const params = JSON.parse(
     listing.unsignedContent
@@ -143,14 +144,16 @@ const mintFromRandomizedListing = async (
     .send({
       from: account,
       value: getTotalPrice(params.startPrice, numberToMint),
-    });
+    })
+    .on("transactionHash", setTxHash);
 };
 
 const mintFromRandomizedListingRestricted = async (
   contract: Contract,
   listing: Listing,
   numberToMint: number,
-  account: string
+  account: string,
+  setTxHash: (hash: string) => void
 ): Promise<TransactionReceipt> => {
   const params = JSON.parse(
     listing.unsignedContent
@@ -165,13 +168,15 @@ const mintFromRandomizedListingRestricted = async (
       numberToMint,
       listing.signature
     )
-    .send({ from: account, value: getTotalPrice(params.price, numberToMint) });
+    .send({ from: account, value: getTotalPrice(params.price, numberToMint) })
+    .on("transactionHash", setTxHash);
 };
 
 const mintFromStandardListing = async (
   contract: Contract,
   listing: Listing,
-  account: string
+  account: string,
+  setTxHash: (hash: string) => void
 ): Promise<TransactionReceipt> => {
   const params = JSON.parse(
     listing.unsignedContent
@@ -186,16 +191,48 @@ const mintFromStandardListing = async (
       params.claimedIpfsHash,
       listing.signature
     )
-    .send({ from: account, value: params.startPrice });
+    .send({ from: account, value: params.startPrice })
+    .on("transactionHash", setTxHash);
+};
+
+const chainIdNumber = (network: Network): number => {
+  switch (network) {
+    case "mainnet":
+      return 1;
+    case "rinkeby":
+      return 4;
+  }
+};
+
+const chainIdHex = (network: Network): string => {
+  switch (network) {
+    case "mainnet":
+      return "0x1";
+    case "rinkeby":
+      return "0x4";
+  }
+};
+
+// checks that the user is on the correct chain and prompts them to switch if they are not.
+const checkChain = async (web3: Web3, listing: Listing): Promise<void> => {
+  const chainId = await web3.eth.getChainId();
+  if (chainId !== chainIdNumber(listing.network)) {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: chainIdHex(listing.network) }],
+    });
+  }
 };
 
 const mintFromListing = async (
   web3: Web3,
   listing: Listing,
-  numberToMint: number
+  numberToMint: number,
+  setTxHash: (hash: string) => void
 ): Promise<TransactionReceipt> => {
   const accounts = await web3.eth.getAccounts();
   const account = accounts[0];
+  await checkChain(web3, listing);
   const abi = JSON.parse(listing.contractDetails.abi);
   const mintingContract = new web3.eth.Contract(
     abi as AbiItem[],
@@ -209,19 +246,26 @@ const mintFromListing = async (
             mintingContract,
             listing,
             numberToMint,
-            account
+            account,
+            setTxHash
           );
         case ListingAccessType.Restricted:
           return mintFromRandomizedListingRestricted(
             mintingContract,
             listing,
             numberToMint,
-            account
+            account,
+            setTxHash
           );
       }
       break;
     case ContractType.ERC721StandardCollection:
-      return mintFromStandardListing(mintingContract, listing, account);
+      return mintFromStandardListing(
+        mintingContract,
+        listing,
+        account,
+        setTxHash
+      );
   }
 };
 

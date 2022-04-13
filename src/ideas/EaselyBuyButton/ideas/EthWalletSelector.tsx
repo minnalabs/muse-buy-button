@@ -19,11 +19,10 @@ type EthWalletSelectorProps = {
   onConnect: (web3: Web3) => Promise<TransactionReceipt>;
   onBack: () => void;
   setError: (e: string) => void;
-  setTx: (tx: TransactionReceipt) => void;
 };
 
 export default function EthWalletSelector(props: EthWalletSelectorProps) {
-  const { onConnect, onBack, setError, setTx } = props;
+  const { onConnect, onBack, setError } = props;
 
   const mintWithWallet = async (walletType: WalletType) => {
     try {
@@ -35,8 +34,7 @@ export default function EthWalletSelector(props: EthWalletSelectorProps) {
         setError("No wallet found");
         return;
       }
-      const tx = await onConnect(web3);
-      setTx(tx);
+      await onConnect(web3);
     } catch (e) {
       setError(e.message || "unknown error");
     }

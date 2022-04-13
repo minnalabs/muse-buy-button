@@ -12,7 +12,6 @@ import {
   getRandomizedCollectionMintOptions,
 } from "./utils/easely";
 import type { Listing, RandomizedCollectionMintOptions } from "./utils/easely";
-import { TransactionReceipt } from "web3-core";
 
 const FONT_FILE =
   "https://d27rt3a60hh1lx.cloudfront.net/fonts/Quicksand_Bold.otf";
@@ -38,7 +37,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
   const [stage, setStage] = useState<Stage>(Stage.Initial);
   const [error, setError] = useState<string>();
   const [listing, setListing] = useState<Listing>();
-  const [tx, setTx] = useState<TransactionReceipt>();
+  const [txHash, setTxHash] = useState<string>();
   const [numberToMint, setNumberToMint] = useState<number>();
   const [mintOptions, setMintOptions] =
     useState<RandomizedCollectionMintOptions | null>(null);
@@ -60,18 +59,18 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
     setTimeout(() => setError(undefined), 5000);
   };
   const openTxHash = () => {
-    if (tx) {
+    if (txHash) {
       if (listing?.network === "rinkeby") {
-        window.open(`https://rinkeby.etherscan.io/tx/${tx.transactionHash}`);
+        window.open(`https://rinkeby.etherscan.io/tx/${txHash}`);
       } else {
-        window.open(`https://etherscan.io/tx/${tx.transactionHash}`);
+        window.open(`https://etherscan.io/tx/${txHash}`);
       }
     }
   };
   const reset = () => {
     setStage(Stage.Initial);
     setError(undefined);
-    setTx(undefined);
+    setTxHash(undefined);
   };
   const clickButton = () => {
     if (mintOptions && mintOptions.canSelectQuantity) {
@@ -117,7 +116,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
       </Panel>
 
       <Panel
-        enabled={stage === Stage.Initial && !!listing && !error && !tx}
+        enabled={stage === Stage.Initial && !!listing && !error && !txHash}
         width={WIDTH}
         height={HEIGHT}
         onClick={clickButton}
@@ -134,7 +133,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
 
       {mintOptions && mintOptions.canSelectQuantity ? (
         <Panel
-          enabled={stage === Stage.SelectQuantity && !!listing && !error && !tx}
+          enabled={stage === Stage.SelectQuantity && !!listing && !error && !txHash}
           width={WIDTH}
           height={HEIGHT}
         >
@@ -155,7 +154,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
       ) : null}
 
       <Panel
-        enabled={stage === Stage.SelectWallet && !!listing && !error && !tx}
+        enabled={stage === Stage.SelectWallet && !!listing && !error && !txHash}
         width={WIDTH}
         height={HEIGHT}
       >
@@ -168,7 +167,11 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
             return mintFromListing(
               web3,
               listing,
-              numberToMint || defaultNumberToMint
+              numberToMint || defaultNumberToMint,
+              (h) => {
+                setTxHash(h);
+                setStage(Stage.Success);
+              }
             );
           }}
           onBack={() => {
@@ -179,15 +182,11 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
             );
           }}
           setError={flashError}
-          setTx={(h) => {
-            setTx(h);
-            setStage(Stage.Success);
-          }}
         />
       </Panel>
 
       <Panel
-        enabled={stage == Stage.Processing && !error && !tx}
+        enabled={stage == Stage.Processing && !error && !txHash}
         width={WIDTH}
         height={HEIGHT}
       >
@@ -203,7 +202,7 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
         </Text>
       </Panel>
 
-      <Panel enabled={!!tx} width={WIDTH} height={HEIGHT}>
+      <Panel enabled={!!txHash} width={WIDTH} height={HEIGHT}>
         <Text
           font={FONT_FILE}
           color="green"
