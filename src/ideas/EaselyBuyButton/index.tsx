@@ -133,7 +133,9 @@ export default function EaselyBuyButton(props: EaselyBuyButtonProps) {
 
       {mintOptions && mintOptions.canSelectQuantity ? (
         <Panel
-          enabled={stage === Stage.SelectQuantity && !!listing && !error && !txHash}
+          enabled={
+            stage === Stage.SelectQuantity && !!listing && !error && !txHash
+          }
           width={WIDTH}
           height={HEIGHT}
         >
