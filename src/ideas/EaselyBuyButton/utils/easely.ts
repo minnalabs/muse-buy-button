@@ -192,7 +192,7 @@ const mintFromRandomized721AListing = async (
       numberToMint,
       [params.startPrice, params.endPrice, params.startTime, params.endTime],
       listing.signature,
-      listing.easelySignature,
+      listing.easelySignature
     )
     .send({
       from: account,
@@ -220,12 +220,11 @@ const mintFromRandomized721AListingRestricted = async (
       params.amount,
       numberToMint,
       listing.signature,
-      listing.easelySignature,
+      listing.easelySignature
     )
     .send({ from: account, value: getTotalPrice(params.price, numberToMint) })
     .on("transactionHash", setTxHash);
 };
-
 
 const mintFromStandardListing = async (
   contract: Contract,
@@ -346,8 +345,10 @@ const mintFromListing = async (
 
 const isRandomizedCollection = (listing: Listing): boolean => {
   const contractType = listing.contractDetails.type;
-  return contractType === ContractType.ERC721RandomizedCollectionV2 ||
-    contractType === ContractType.ERC721ARandomizedCollection;
+  return (
+    contractType === ContractType.ERC721RandomizedCollectionV2 ||
+    contractType === ContractType.ERC721ARandomizedCollection
+  );
 };
 
 const getRandomizedCollectionMintOptions = (
