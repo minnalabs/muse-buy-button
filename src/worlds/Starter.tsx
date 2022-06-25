@@ -10,7 +10,7 @@ export default function Starter() {
       <group position={[0, 1, -4]}>
         <EaselyBuyButton
           text="Buy"
-          easelyListingId="lst_c9noed4ds0mahll2pnm0"
+          easelyListingId="lst_carn6ch8au98n5gspe7g"
           color="blue"
         />
       </group>
