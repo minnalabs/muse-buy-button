@@ -396,7 +396,8 @@ const isRandomizedCollection = (listing: Listing): boolean => {
   const contractType = listing.contractDetails.type;
   return (
     contractType === ContractType.ERC721RandomizedCollectionV2 ||
-    contractType === ContractType.ERC721ARandomizedCollection
+    contractType === ContractType.ERC721ARandomizedCollection ||
+    contractType === ContractType.ERC721ARandomizedCollectionV2
   );
 };
 
